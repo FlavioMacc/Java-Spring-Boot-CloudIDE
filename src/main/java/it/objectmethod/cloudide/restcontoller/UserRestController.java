@@ -14,7 +14,7 @@ public class UserRestController {
 
 	@Autowired
 	private UserRepository userRepository;
-
+	
 	@CrossOrigin
 	@GetMapping("/getUser")
 	public User getUser(@RequestParam("id") Long id) {
