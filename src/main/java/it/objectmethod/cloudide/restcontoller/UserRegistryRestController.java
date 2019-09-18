@@ -4,11 +4,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.objectmethod.cloudide.domain.view.UserRegistry;
+import it.objectmethod.cloudide.domain.UserRegistryParameterFilter;
 import it.objectmethod.cloudide.repository.view.UserRegistryRepository;
 
 @RestController
@@ -18,37 +19,37 @@ public class UserRegistryRestController {
 	private UserRegistryRepository userRegistryRepository;
 
 	@CrossOrigin
-	@GetMapping("/getAllUserRegistry")
-	public List<UserRegistry> getAllUserRegistry() {
+	@PostMapping("/getUsersRegistryFilter")
+	public List<UserRegistry> getUsersRegistryFilter(@RequestBody UserRegistryParameterFilter params) {
+
+		System.out.println(params);
+
+		if (params.getUnb() == null || params.getUnb().equals("")) {
+			params.setUnb("%");
+		}
+		if (params.getUnbDescription() == null || params.getUnbDescription().equals("")) {
+			params.setUnbDescription("%");
+		}
+		if (params.getPartitaIva() == null || params.getPartitaIva().equals("")) {
+			params.setPartitaIva("%");
+		}
+		if (params.getCompanyName() == null || params.getCompanyName().equals("")) {
+			params.setCompanyName("%");
+		}
+		if (params.getUserName() == null || params.getUserName().equals("")) {
+			params.setUserName("%");
+		}
+		if (params.getIdRole() == null || params.getIdRole().equals("")) {
+			params.setIdRole("%");
+		}
 
 		List<UserRegistry> usersRegistry = null;
-		usersRegistry = userRegistryRepository.findAll();
 
-		return usersRegistry;
-	}
+		usersRegistry = userRegistryRepository.findUserRegistryForFilter(params.getUnb(), params.getUnbDescription(),
+				params.getCompanyName(), params.getUserName(), params.getIdRole());
 
-	@CrossOrigin
-	@GetMapping("/getUsersRegistryFilter")
-	public List<UserRegistry> getUsersRegistryFilter(@RequestParam(value = "unb", required = false) String unb,
-			@RequestParam(value = "unbDesc", required = false) String unbDesc,
-			@RequestParam(value = "partitaIva", required = false) String partitaIva,
-			@RequestParam(value = "companyName", required = false) String companyName,
-			@RequestParam(value = "userName", required = false) String userName,
-			@RequestParam(value = "rule", required = false) String rule) {
-		
-		if(unb==null) {unb="%";} //else {System.out.println(unb);}
-		if(unbDesc==null) {unbDesc="%";}
-		if(partitaIva==null) {partitaIva="%";}
-		if(companyName==null) {companyName="%";}
-		if(userName==null) {userName="%";}
-		if(rule==null) {rule="%";}
-		
-		List<UserRegistry> usersRegistry = null;
+		System.out.println("numero di elementi -> " + usersRegistry.size());
 
-		usersRegistry = userRegistryRepository.findUserRegistryForFilter(unb, unbDesc, companyName, userName, rule);
-		
-		System.out.println("numero di elementi -> "+usersRegistry.size());
-		
 		return usersRegistry;
 	}
 
